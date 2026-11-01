@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hutan Terakhir</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <div id="hud" class="hidden">
+      <div class="panel tl">
+        <div class="label">Hutan tersisa</div>
+        <div class="big" id="forestPct">100%</div>
+        <div class="bar"><div id="forestBar"></div><span class="mark"></span><span class="mark best" title="50% = ending terbaik"></span></div>
+        <div class="row"><span>🔥 Titik api</span><b id="fireCount">0</b></div>
+        <div class="row"><span>💧 Api dipadamkan</span><b id="savedCount">0</b></div>
+        <div class="mission" id="mission"></div>
+      </div>
+
+      <div class="panel tr">
+        <div class="label">Hari menuju hujan</div>
+        <div class="big" id="days">30</div>
+        <div class="support" id="support"></div>
+      </div>
+
+      <div class="panel bl">
+        <div class="label">Tangki air</div>
+        <div class="bar water"><div id="waterBar"></div></div>
+        <div class="hint" id="waterHint"></div>
+        <div class="hint reserve" id="bikeReserve"></div>
+        <div class="gadget" id="gadget"></div>
+      </div>
+
+      <canvas id="minimap" width="180" height="180"></canvas>
+      <div id="compass"><div id="compassTrack"></div><div class="compass-mid"></div></div>
+      <div id="objective"></div>
+      <div id="marker" class="hidden"><div id="markerArrow">➤</div><div id="markerIcon"></div><div id="markerDist"></div></div>
+      <div id="phaseBanner"></div>
+      <div id="pop"></div>
+      <div id="edgeWarn"><div id="edgeArrow">⬆</div><div><b>BATAS KAWASAN</b><small>Ikuti panah, balik ke hutan</small></div></div>
+      <div id="threats"></div>
+      <div id="boost" class="hidden">🔥 SEMANGAT! <i id="boostBar"></i></div>
+      <div id="shout" class="hidden"></div>
+      <div id="shoutHint"><span class="sh-key" id="shoutKey">RB</span><b>TERIAK</b><small id="shoutSub">biar semangat</small></div>
+      <div id="weaponSwap"><div class="ws-ic" id="wsIcon"></div><div class="ws-body"><small>GANTI ALAT</small><b id="wsName"></b><span id="wsDesc"></span><div class="ws-slots" id="wsSlots"></div></div></div>
+      <div id="prompt" class="hidden"><span class="key" id="promptKey"></span><span id="promptText"></span></div>
+      <div id="toasts"></div>
+      <div class="controls" id="controlsHint"></div>
+    </div>
+
+    <div id="menu" class="overlay">
+      <div class="card">
+        <div class="kicker">Kalimantan · Musim Kemarau</div>
+        <h1>HUTAN TERAKHIR</h1>
+        <p class="tagline">Dijaga sampai hujan turun. Atau sampai izinnya keluar.</p>
+        <p>Hutan terbakar. Kata pejabat: terkendali.<br />Pak Presiden turun sendiri. Jaga hutan tetap di atas <b>40%</b> sampai hujan.</p>
+        <div class="btn-row">
+          <button id="startBtn">Turun ke Hutan</button>
+          <button id="continueBtn" class="ghost hidden"></button>
+          <button id="padTestBtn" class="ghost">🎮 Cek controller</button>
+          <button id="gfxBtn" class="ghost"></button>
+        </div>
+        <div class="pad-status" id="padStatus"></div>
+        <div class="controls-menu" id="menuHint"></div>
+        <div class="disclaimer">Karya fiksi &amp; satire. Semua tokoh, lembaga, perusahaan, dan kutipan di game ini fiktif. Fakta di layar akhir ada sumbernya.<br />Model 3D dibuat pakai Meshy · Animasi dari Mixamo · Mesin Three.js</div>
+      </div>
+    </div>
+
+    <div id="flash"></div>
+    <div id="caption" class="hidden"></div>
+    <div id="phone" class="hidden">
+      <div class="phone-head"><span class="ring">📞</span> Telepon masuk · <span id="phoneCaller"></span></div>
+      <p id="phoneText"></p>
+      <div class="phone-offer" id="phoneOffer"></div>
+      <div class="phone-actions">
+        <span><b class="key" id="phoneYesKey">A</b> Terima</span>
+        <span><b class="key" id="phoneNoKey">B</b> Tolak</span>
+      </div>
+    </div>
+
+    <div id="hotmap" class="overlay hidden">
+      <div class="map-card">
+        <div class="kicker">Peta Titik Panas · Citra Satelit</div>
+        <canvas id="hotmapCanvas" width="640" height="640"></canvas>
+        <div class="map-info" id="hotmapInfo"></div>
+        <div class="map-list" id="hotmapList"></div>
+        <div class="legend">
+          <span><i style="background:#ff6a28"></i>Titik api</span>
+          <span><i style="background:#ff3c3c;box-shadow:0 0 0 2px #fff inset"></i>🐀 Pelaku · ⚠️ mau masuk</span>
+          <span><i style="background:#f2b822;border-radius:2px"></i>Bulldozer</span>
+          <span><i style="background:#4fb6e8"></i>Sumur bor</span>
+          <span><i style="background:#ff3030;border-radius:2px"></i>Damkar</span>
+          <span><i style="background:#e8e2d0;border-radius:2px"></i>Pengadilan / posko</span>
+        </div>
+        <div class="map-help" id="hotmapHelp"></div>
+        <div class="controls-menu" id="hotmapHint"></div>
+      </div>
+    </div>
+
+    <div id="padtest" class="overlay hidden">
+      <div class="card">
+        <div class="kicker">Cek controller</div>
+        <h1 style="font-size:40px">Tekan tombol apa saja</h1>
+        <p id="padInfo">Controller belum kebaca. Coba tekan satu tombol.</p>
+        <div class="dpad">
+          <span id="dU">▲</span>
+          <div><span id="dL">◀</span><span id="dD">▼</span><span id="dR">▶</span></div>
+        </div>
+        <p class="pad-raw" id="padRaw"></p>
+        <button id="padTestClose">Tutup</button>
+        <div class="controls-menu">D-pad gak nyala pas ditekan? Cabut controller-nya, colok lagi.</div>
+      </div>
+    </div>
+
+    <div id="intro" class="overlay hidden">
+      <div class="card">
+        <div class="kicker" id="introKicker"></div>
+        <h1 id="introTitle"></h1>
+        <blockquote class="quote"><span id="introQuote"></span><cite id="introWho"></cite></blockquote>
+        <ul class="brief" id="introBrief"></ul>
+        <div class="carry" id="introCarry"></div>
+        <button id="introBtn">Mulai</button>
+        <div class="controls-menu" id="introHint"></div>
+      </div>
+    </div>
+
+    <div id="result" class="overlay hidden">
+      <div class="card">
+        <div class="rapor hidden" id="resultRapor"></div>
+        <div class="kicker" id="resultKicker"></div>
+        <h1 id="resultTitle"></h1>
+        <div class="stars" id="resultStars"></div>
+        <p id="resultText"></p>
+        <div class="score" id="resultStats"></div>
+        <div class="btn-row">
+          <button id="resultNext"></button>
+          <button id="resultRetry" class="ghost">Ulangi</button>
+        </div>
+        <div class="controls-menu" id="resultHint"></div>
+      </div>
+    </div>
+
+    <div id="end" class="overlay hidden">
+      <div class="card">
+        <div class="rapor" id="endRapor"></div>
+        <div class="kicker" id="endKicker"></div>
+        <h1 id="endTitle"></h1>
+        <p id="endText"></p>
+        <div class="score" id="endScore"></div>
+        <div class="choices" id="endChoices"></div>
+        <div class="facts">
+          <div class="facts-title">Faktanya:</div>
+          <div id="endFacts"></div>
+        </div>
+        <p class="other" id="endOther"></p>
+        <button id="againBtn">Main lagi</button>
+        <div class="disclaimer">Karya fiksi &amp; satire. Tokoh, perusahaan, dan kutipan pejabat di game ini fiktif. Faktanya tidak.</div>
+        <div class="controls-menu" id="againHint"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

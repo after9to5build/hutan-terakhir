@@ -1,0 +1,18 @@
+# Dependensi & hasil build
+node_modules/
+dist/
+*.zip
+
+# File mentah (gak dipublish): model asli Meshy & rekaman suara mentah
+models-asli/
+audio-asli/
+
+# Catatan internal pembuat (gak dipublish)
+KONSEP.md
+ASET-MESHY.md
+CLAUDE.md
+
+# Setelan lokal
+.claude/
+.DS_Store
+*.log

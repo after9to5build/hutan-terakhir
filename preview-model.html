@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Cek Model</title>
+<style>
+  body { margin: 0; background: #2b2f2a; color: #eee; font: 14px system-ui, sans-serif; overflow: hidden; }
+  #ui { position: fixed; top: 8px; left: 8px; display: flex; flex-wrap: wrap; gap: 6px; max-width: 95vw; }
+  button { background: #3d4a3a; color: #eee; border: 1px solid #6a7d62; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+  button.on { background: #9ccc65; color: #111; }
+  #info { position: fixed; bottom: 8px; left: 8px; }
+</style>
+</head>
+<body>
+<!-- Alat cek model Meshy: buka /preview-model.html?m=presiden -->
+<div id="ui"></div>
+<div id="info"></div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+const name = new URLSearchParams(location.search).get('m') || 'presiden';
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x2b2f2a);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x445533, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 2); sun.position.set(3, 5, 4); scene.add(sun);
+scene.add(new THREE.GridHelper(10, 20, 0x667755, 0x445544));
+const camera = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(2.2, 1.4, 4.2);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0.9, 0);
+
+const clock = new THREE.Clock();
+const p = { mixer: null, clips: [], action: null, model: null, hips: null };
+window.preview = p;
+
+new GLTFLoader().load(`/models/${name}.glb`, (g) => {
+  p.model = g.scene; scene.add(g.scene);
+  const box = new THREE.Box3().setFromObject(g.scene);
+  const h = box.max.y - box.min.y;
+  g.scene.traverse((o) => { if (o.isBone && /Hips/.test(o.name) && !p.hips) p.hips = o; });
+  p.mixer = new THREE.AnimationMixer(g.scene);
+  p.clips = g.animations;
+  const ui = document.getElementById('ui');
+  g.animations.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.textContent = `${i + 1}. ${c.name} (${c.duration.toFixed(1)}s)`;
+    b.onclick = () => p.play(i);
+    ui.appendChild(b);
+  });
+  document.getElementById('info').textContent = `${name}.glb, tinggi ${h.toFixed(2)}, ${g.animations.length} animasi`;
+  if (g.animations.length) p.play(0);
+  // Penanda arah: merah = +x, biru = +z (depan versi game)
+  const ax = new THREE.AxesHelper(1.5); ax.position.y = 0.01; scene.add(ax);
+});
+
+// Putar animasi ke-i dari awal.
+p.play = (i) => {
+  p.mixer.stopAllAction();
+  p.action = p.mixer.clipAction(p.clips[i]).reset().play();
+  document.querySelectorAll('#ui button').forEach((b, j) => b.classList.toggle('on', j === i));
+};
+// Lompat ke detik t (buat screenshot frame tertentu).
+p.seek = (t) => { p.action.time = t; p.mixer.update(0); renderer.render(scene, camera); };
+p.paused = false;
+// Kamera: 'depan' atau 'samping'.
+p.view = (v) => {
+  camera.position.set(...(v === 'samping' ? [4.6, 1.3, 0] : [0, 1.3, 4.6]));
+  controls.target.set(0, 0.9, 0); controls.update();
+};
+
+renderer.setAnimationLoop(() => {
+  if (p.mixer && !p.paused && p.action) p.mixer.update(clock.getDelta()); else clock.getDelta();
+  controls.update();
+  renderer.render(scene, camera);
+});
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
