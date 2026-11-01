@@ -379,3 +379,4 @@ export function tandonMaterial() {
     },
   }, { rough: 0.45 });
 }
+export { painted as paintedMat };

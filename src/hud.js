@@ -140,6 +140,11 @@ export class Hud {
       c.strokeStyle = '#fff'; c.lineWidth = 1.5; c.stroke();
     }
     // titik sekat kanal yang belum dibangun
+    if (extras.kopdes) { // KOPDES: kotak merah-putih
+      const kx = toMap(extras.kopdes.x), kz = toMap(extras.kopdes.z);
+      c.fillStyle = '#ffffff'; c.fillRect(kx - 4, kz - 4, 8, 8);
+      c.fillStyle = '#d61f26'; c.fillRect(kx - 4, kz - 4, 8, 4);
+    }
     for (const d of extras.dams || []) {
       c.fillStyle = '#f2c12e';
       c.fillRect(toMap(d.x) - 3.5, toMap(d.z) - 3.5, 7, 7);

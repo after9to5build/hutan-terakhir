@@ -27,6 +27,7 @@ import { Court, EVIDENCE_NEEDED } from './court.js';
 import { decideEnding, stageEnding, sawitTakeover, ENDINGS, FACTS, raporTitle } from './endings.js';
 import { Sfx } from './audio.js';
 import { Wahana } from './wahana.js';
+import { Kopdes } from './kopdes.js';
 import { MISSION, phaseAt, starsFor } from './levels.js';
 
 // Satu misi utuh dengan 3 babak
@@ -200,6 +201,8 @@ const satire = new Satire({ scene, hud, input, player, bike, fire, enemies, doze
 satire.calls = LEVEL.calls;
 const gadgets = new Gadgets({ scene, player, enemies, hud, sfx, satire });
 // Wahana satir (panggung peresmian + sirkuit motor). Gak masuk misi; api tetap jalan selama main.
+const kopdes = new Kopdes(scene, world, { hud });
+guide.kopdes = kopdes; // ikon 🏪 di kompas
 const wahana = new Wahana(scene, { hud, sfx, player, bike, fire, satire, pop: (...a) => pop(...a), get game() { return game; } });
 satire.drones = LEVEL.drones;
 
@@ -1108,6 +1111,7 @@ function frame() {
       handleHeliEvents();
       gadgets.update(dt);
       wahana.update(dt, game.state === 'play' || game.state === 'rain');
+      kopdes.update(dt, player, game.state === 'play');
       if (game.state === 'play') satire.update(dt, game.elapsed, time);
     }
   }
@@ -1165,7 +1169,7 @@ function frame() {
   updateMission(Math.ceil((left / LEVEL.duration) * LEVEL.days));
   if (playing) {
     guide.update(dt, player, camYaw, bike.rider);
-    hud.drawMinimap(dt, world, player, camYaw, { enemies: enemies.active(), bike, dozers: dozers.active(), truck, heli, incoming: guide.incoming, dams: dams.remaining(), volunteers: volunteers.active });
+    hud.drawMinimap(dt, world, player, camYaw, { enemies: enemies.active(), bike, dozers: dozers.active(), truck, heli, incoming: guide.incoming, dams: dams.remaining(), volunteers: volunteers.active, kopdes: kopdes.pos });
   }
 
   composer.render();
@@ -1176,7 +1180,7 @@ frame();
 
 // Buat debug di console: window.game
 window.game = {
-  game, world, fire, player, bike, enemies, birds, renderer, composer, guide, input, dozers, satire, truck, LEVEL, endGame, heli, court, playEnding, sfx, gadgets, dams, volunteers, wahana,
+  game, world, fire, player, bike, enemies, birds, renderer, composer, guide, input, dozers, satire, truck, LEVEL, endGame, heli, court, playEnding, sfx, gadgets, dams, volunteers, wahana, kopdes,
   cam: (yaw, pitch) => { camYaw = yaw; if (pitch !== undefined) camPitch = pitch; },
   camInfo: () => ({ yaw: camYaw, pitch: camPitch }),
 };

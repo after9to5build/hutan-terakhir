@@ -298,6 +298,7 @@ export class Guide {
     for (const d of this.dozers.active()) if (near(d.pos.x, d.pos.z)) items.push({ a: -rel(d.pos.x - player.pos.x, d.pos.z - player.pos.z), html: '🚜', cls: 'poi' });
     items.push({ a: -rel(POSKO.x - player.pos.x, POSKO.z - player.pos.z), html: '⛺', cls: 'poi' });
     if (this.dams) for (const d of this.dams.remaining()) items.push({ a: -rel(d.x - player.pos.x, d.z - player.pos.z), html: '🚧', cls: 'poi' });
+    if (this.kopdes) items.push({ a: -rel(this.kopdes.pos.x - player.pos.x, this.kopdes.pos.z - player.pos.z), html: '🏪', cls: 'poi' });
     if (this.courtGoal && this.courtGoal()) items.push({ a: -rel(COURT.x - player.pos.x, COURT.z - player.pos.z), html: '⚖️', cls: 'poi' });
     if (this.truck && this.truck.state !== 'idle' && near(this.truck.pos.x, this.truck.pos.z))
       items.push({ a: -rel(this.truck.pos.x - player.pos.x, this.truck.pos.z - player.pos.z), html: '🚒', cls: 'poi' });
