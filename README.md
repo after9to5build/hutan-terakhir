@@ -92,12 +92,13 @@ Game ini fiksi, tapi fakta di layar akhirnya asli dan ada sumbernya:
 **Mau modif atau publish ulang?** Boleh, dengan syarat:
 
 1. **Ganti suara.** Rekaman suara teriak itu suara asli pembuat, jadi wajib diganti pakai suara lo sendiri. Efek suara pihak ketiga juga wajib diganti.
-2. **Ganti identitas.** Semua atribut pribadi pembuat (nama, akun, link, kredit) diganti pakai identitas lo sendiri.
-3. **Tulis jelas bahwa itu versi modifikasi**, bukan versi resmi.
-4. **Tetap pertahankan disclaimer satir**, fakta yang akurat dan bersumber, dan jangan pakai wajah, nama, atau suara tokoh asli.
+2. **Ganti identitas.** Atribut pribadi pembuat (nama, akun, link) diganti pakai identitas lo sendiri, biar gak ada kesan versi resmi.
+3. **Wajib kasih credit** di halaman publikasi **dan** di dalam game: *"Berbasis **Hutan Terakhir** oleh **after9to5build** · https://github.com/after9to5build/hutan-terakhir"*. Credit ini gak boleh dihapus atau diganti.
+4. **Tulis jelas bahwa itu versi modifikasi**, bukan versi resmi.
+5. **Tetap pertahankan disclaimer satir**, fakta yang akurat dan bersumber, dan jangan pakai wajah, nama, atau suara tokoh asli.
 
 **Tanggung jawab:** pembuat cuma bertanggung jawab atas versi resmi (repo ini dan halaman itch.io resmi). Versi modifikasi sepenuhnya tanggung jawab yang memodif dan mempublishnya.
 
 ---
 
-*English: a satirical 3D browser game about forest fires in Kalimantan, Indonesia. Code is MIT-licensed; assets, the author's voice, and identity are not. Forks must replace the audio and the author's personal attributes, and clearly state they are unofficial. See [LICENSE-ASSETS.md](LICENSE-ASSETS.md).*
+*English: a satirical 3D browser game about forest fires in Kalimantan, Indonesia. Code is MIT-licensed; assets, the author's voice, and identity are not. Forks must replace the audio and the author's personal attributes, clearly state they are unofficial, and credit the original both on their page and in-game: "Based on Hutan Terakhir by after9to5build · https://github.com/after9to5build/hutan-terakhir". See [LICENSE-ASSETS.md](LICENSE-ASSETS.md).*
