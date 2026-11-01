@@ -2,7 +2,7 @@
 
 *(English summary at the bottom.)*
 
-Lisensi MIT di file `LICENSE` **cuma berlaku buat kode**. Semua yang ada di bawah ini **gak termasuk** lisensi MIT.
+Lisensi MIT di file `LICENSE` **cuma berlaku buat kode** (`src/`, `index.html`, `preview-model.html`, `tools/`, `vite.config.js`, `package.json`). Semua yang ada di bawah ini **gak termasuk** lisensi MIT.
 
 ## 1. Aset yang gak termasuk MIT
 
