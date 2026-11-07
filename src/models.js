@@ -6,11 +6,20 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 const loader = new GLTFLoader();
 const cache = {};
 
+// Presiden + perlengkapannya didownload duluan. Model lain nunggu sampai presiden siap,
+// biar gak rebutan internet (dulu presiden telat muncul di koneksi lambat).
+const HERO_GEAR = new Set(['tangki-punggung', 'alat-semprot']);
+let heroDone;
+export const heroReady = new Promise((r) => { heroDone = r; });
+export function markHeroReady() { heroDone(); }
+setTimeout(markHeroReady, 20000); // jaga-jaga: jangan nahan model lain selamanya
+
 // Mulai muat model `name` (file public/models/<name>.glb). Balikin Promise berisi gltf.
 export function loadModel(name) {
   if (!cache[name]) {
     cache[name] = { gltf: null };
-    cache[name].promise = loader.loadAsync(`models/${name}.glb`).then((g) => {
+    const wait = HERO_GEAR.has(name) ? Promise.resolve() : heroReady;
+    cache[name].promise = wait.then(() => loader.loadAsync(`models/${name}.glb`)).then((g) => {
       cache[name].gltf = g;
       return g;
     }).catch((e) => {

@@ -143,6 +143,7 @@ button {
   box-shadow: 0 8px 30px rgba(255, 122, 42, 0.35);
 }
 button:hover { filter: brightness(1.08); }
+button:disabled { filter: grayscale(0.6) brightness(0.8); cursor: wait; box-shadow: none; }
 .controls-menu { margin-top: 14px; font-size: 12px; color: var(--muted); }
 .pad-status {
   margin-top: 16px;

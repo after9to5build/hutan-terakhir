@@ -3,14 +3,20 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { heroReady } from './models.js';
 
 const loader = new GLTFLoader();
 const cache = {};
 
+// Presiden dimuat duluan (file ini juga dipakai player.js, jadi cuma didownload sekali).
+// Karakter lain nunggu presiden siap.
 export function loadChar(name) {
   if (!cache[name]) {
-    cache[name] = { gltf: null };
-    cache[name].promise = loader.loadAsync(`models/${name}.glb`).then((g) => {
+    const entry = cache[name] = { gltf: null, progress: 0 };
+    const wait = name === 'presiden' ? Promise.resolve() : heroReady;
+    const onProgress = (e) => { if (e.total) entry.progress = e.loaded / e.total; };
+    cache[name].promise = wait.then(() => loader.loadAsync(`models/${name}.glb`, onProgress)).then((g) => {
+      entry.progress = 1;
       cache[name].gltf = g;
       return g;
     }).catch((e) => {
@@ -19,6 +25,11 @@ export function loadChar(name) {
     });
   }
   return cache[name].promise;
+}
+
+// Seberapa jauh download karakter `name` (0..1), buat tulisan "Memuat..." di menu.
+export function loadProgress(name) {
+  return cache[name]?.progress ?? 0;
 }
 
 // Ambil klip `clip` dari file `from`. Klip pinjaman dibuang jalur posisinya

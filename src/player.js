@@ -2,13 +2,11 @@ import * as THREE from 'three';
 import { clamp } from './config.js';
 import { groundHeight, WATER_Y } from './world.js';
 import { Particles, makeSoftTexture } from './particles.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { aimBone } from './characters.js';
+import { aimBone, loadChar } from './characters.js';
 import { makeBackTank } from './props.js';
-import { loadModel as loadGear } from './models.js';
+import { loadModel as loadGear, markHeroReady } from './models.js';
 
-// Model Meshy (ASET-MESHY.md #1). Nama klip = nama animasi di file GLB.
-const MODEL_URL = 'models/presiden.glb';
+// Model Meshy (ASET-MESHY.md #1, file models/presiden.glb). Nama klip = nama animasi di file GLB.
 const MODEL_HEIGHT = 2.2; // disamain sama tinggi placeholder biar pas sama motor, pintu, dll.
 const CLIPS = {
   idle: 'Idle_9',
@@ -114,11 +112,13 @@ export class Player {
 
   loadModel() {
     // Presiden + perlengkapan Meshy (ASET-MESHY.md #12c) dimuat bareng, biar bisa ditempel pas pose A
-    Promise.all([
-      new GLTFLoader().loadAsync(MODEL_URL),
+    // `this.ready` selesai pas presiden udah kelihatan; menu nunggu ini sebelum tombol mulai aktif.
+    this.ready = Promise.all([
+      loadChar('presiden'),
       loadGear('tangki-punggung'),
       loadGear('alat-semprot'),
     ]).then(([gltf, tankG, lanceG]) => {
+      if (!gltf) throw new Error('presiden.glb kosong');
       const model = gltf.scene;
       const box = new THREE.Box3().setFromObject(model);
       model.scale.setScalar(MODEL_HEIGHT / (box.max.y - box.min.y));
@@ -164,7 +164,7 @@ export class Player {
     }).catch((e) => {
       console.warn('presiden.glb gagal dimuat, pakai placeholder', e);
       this.group.visible = true;
-    });
+    }).finally(markHeroReady);
   }
 
   // Tangki Meshy di punggung + alat semprot di tangan kanan + selang lentur di antaranya.

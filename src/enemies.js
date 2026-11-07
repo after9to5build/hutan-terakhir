@@ -8,6 +8,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { makeJerrycan, makeChainsaw } from './props.js';
 import { recolorMaterial } from './characters.js';
+import { heroReady } from './models.js';
 
 // Model Meshy tikus (ASET-MESHY.md #2 & #3). Dimuat sekali, tiap pelaku dapat salinannya.
 // Kalau belum kemuat pas pelaku muncul, pelaku itu pakai placeholder kotak.
@@ -35,13 +36,16 @@ const RAT_MODELS = {
   },
 };
 const loader = new GLTFLoader();
-for (const [kind, m] of Object.entries(RAT_MODELS)) {
-  loader.load(m.url, (g) => {
-    const box = new THREE.Box3().setFromObject(g.scene);
-    m.scale = RAT_HEIGHT / (box.max.y - box.min.y);
-    m.gltf = g;
-  }, undefined, (e) => console.warn(`${m.url} gagal dimuat, ${kind} pakai placeholder`, e));
-}
+// Tikus dimuat setelah presiden siap (lihat heroReady di models.js)
+heroReady.then(() => {
+  for (const [kind, m] of Object.entries(RAT_MODELS)) {
+    loader.load(m.url, (g) => {
+      const box = new THREE.Box3().setFromObject(g.scene);
+      m.scale = RAT_HEIGHT / (box.max.y - box.min.y);
+      m.gltf = g;
+    }, undefined, (e) => console.warn(`${m.url} gagal dimuat, ${kind} pakai placeholder`, e));
+  }
+});
 
 // Barang bawaan di tangan kanan (Gelombang 4, dibikin lewat kode di props.js)
 function buildProp(kind) {

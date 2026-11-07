@@ -29,6 +29,7 @@ import { Sfx } from './audio.js';
 import { Wahana } from './wahana.js';
 import { Kopdes } from './kopdes.js';
 import { MISSION, phaseAt, starsFor } from './levels.js';
+import { loadProgress } from './characters.js';
 
 // Satu misi utuh dengan 3 babak
 const LEVEL = MISSION;
@@ -389,9 +390,26 @@ function igniteRandom(minDist) {
 }
 
 const $ = (id) => document.getElementById(id);
+// Tombol mulai baru aktif setelah model presiden siap, biar pemain gak masuk ke game
+// yang tokoh utamanya belum kelihatan (kejadian di koneksi lambat).
+let heroLoaded = false;
+{
+  const btn = $('startBtn');
+  const label = btn.textContent;
+  btn.disabled = true;
+  const tick = setInterval(() => {
+    btn.textContent = `Memuat… ${Math.min(99, Math.round(loadProgress('presiden') * 100))}%`;
+  }, 150);
+  player.ready.then(() => {
+    clearInterval(tick);
+    heroLoaded = true;
+    btn.disabled = false;
+    btn.textContent = label;
+  });
+}
 // Menu utama → layar pembuka misi
 function startGame() {
-  if (game.state !== 'menu') return;
+  if (game.state !== 'menu' || !heroLoaded) return;
   $('menu').classList.add('hidden');
   showIntro();
 }
